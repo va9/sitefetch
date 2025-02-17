@@ -58,6 +58,10 @@ cli
           totalTokenCount
         )}`
       )
+    } else {
+      logger.info(
+        `Total page count: ${pages.size} pages`
+      )
     }
 
     if (flags.outfile) {
