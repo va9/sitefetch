@@ -19,6 +19,7 @@ cli
   .option("--content-selector <selector>", "The CSS selector to find content")
   .option("--limit <limit>", "Limit the result to this amount of pages")
   .option("--silent", "Do not print any logs")
+  .option("--disable-tokenizer", "Disable the use of gpt-tokenizer") // Add this line
   .action(async (url, flags) => {
     if (!url) {
       cli.outputHelp()
@@ -43,16 +44,21 @@ cli
 
     const pagesArr = [...pages.values()]
 
-    const totalTokenCount = pagesArr.reduce(
-      (acc, page) => acc + encode(page.content).length,
-      0
-    )
+    let totalTokenCount = 0
+    if (!flags.disableTokenizer) { // Add this condition
+      totalTokenCount = pagesArr.reduce(
+        (acc, page) => acc + encode(page.content).length,
+        0
+      )
+    }
 
-    logger.info(
-      `Total token count for ${pages.size} pages: ${formatNumber(
-        totalTokenCount
-      )}`
-    )
+    if (!flags.disableTokenizer) { // Add this condition
+      logger.info(
+        `Total token count for ${pages.size} pages: ${formatNumber(
+          totalTokenCount
+        )}`
+      )
+    }
 
     if (flags.outfile) {
       const output = serializePages(
